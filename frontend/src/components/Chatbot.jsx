@@ -1,7 +1,10 @@
 import React, { useState, useRef, useEffect } from 'react';
 import axios from 'axios';
 import { Table as AntdTable, Button, Input, Tooltip as AntTooltip, Typography } from 'antd';
-import { CloseOutlined, MessageOutlined, PlusOutlined, SendOutlined, DownloadOutlined, LineChartOutlined } from '@ant-design/icons';
+import {
+    CloseOutlined, MessageOutlined, PlusOutlined, SendOutlined,
+    DownloadOutlined, LineChartOutlined, ExpandOutlined, CompressOutlined
+} from '@ant-design/icons';
 import * as XLSX from 'xlsx';
 import {
     LineChart, Line, CartesianGrid, XAxis, YAxis, Tooltip, ResponsiveContainer
@@ -14,7 +17,39 @@ function Chatbot({ token, sessionId, setSessionId, isOpen, setIsOpen }) {
     const [messages, setMessages] = useState([]);
     const [query, setQuery] = useState('');
     const [loading, setLoading] = useState(false);
+    const [isExpanded, setIsExpanded] = useState(false);
+    const [sessionsList, setSessionsList] = useState([]);
     const chatRef = useRef(null);
+
+    const loadSessions = async () => {
+        try {
+            const headers = token ? { Authorization: `Bearer ${token}` } : {};
+            const res = await axios.get('http://localhost:8000/sessions', { headers });
+            setSessionsList(res.data);
+        } catch (err) {
+            console.error('Failed to load sessions', err);
+        }
+    };
+
+    const loadSessionHistory = async (sid) => {
+        setLoading(true);
+        setSessionId(sid);
+        try {
+            const headers = token ? { Authorization: `Bearer ${token}` } : {};
+            const res = await axios.get(`http://localhost:8000/session/${sid}/history`, { headers });
+            setMessages(res.data.messages);
+        } catch (err) {
+            console.error('Failed to load session history', err);
+        }
+        setLoading(false);
+    };
+
+    useEffect(() => {
+        // Fetch sessions whenever expanded view is opened or a new session is created
+        if (isExpanded) {
+            loadSessions();
+        }
+    }, [isExpanded, sessionId]);
 
     useEffect(() => {
         if (chatRef.current) {
@@ -146,70 +181,105 @@ function Chatbot({ token, sessionId, setSessionId, isOpen, setIsOpen }) {
                 </button>
             )}
 
-            <div className={`chatbot-window ${isOpen ? 'open' : ''}`}>
-                <div className="chatbot-header">
-                    <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-                        <div className="chatbot-avatar">
-                            <MessageOutlined style={{ color: '#fff', fontSize: '16px' }} />
+            <div className={`chatbot-window ${isOpen ? 'open' : ''} ${isExpanded ? 'expanded' : ''}`}>
+
+                {isExpanded && (
+                    <div className="chatbot-sidebar">
+                        <div className="chatbot-sidebar-header">
+                            <Button type="primary" block icon={<PlusOutlined />} onClick={createNewSession}>
+                                New Chat
+                            </Button>
                         </div>
-                        <div>
-                            <div style={{ fontWeight: 600, fontSize: '16px', lineHeight: 1.2 }}>AI Assistant</div>
-                            <div style={{ fontSize: '12px', opacity: 0.8, display: 'flex', alignItems: 'center', gap: '4px' }}>
-                                <span className="online-dot"></span> Online
-                            </div>
+                        <div className="chatbot-sidebar-list">
+                            {sessionsList.map(s => (
+                                <div
+                                    key={s.session_id}
+                                    className={`chatbot-sidebar-item ${s.session_id === sessionId ? 'active' : ''}`}
+                                    onClick={() => loadSessionHistory(s.session_id)}
+                                >
+                                    <MessageOutlined />
+                                    <span className="session-id-text">
+                                        Session {s.session_id.split('-')[0]}
+                                    </span>
+                                </div>
+                            ))}
                         </div>
                     </div>
-                    <div style={{ display: 'flex', gap: '4px', alignItems: 'center' }}>
-                        <AntTooltip title="New Session">
-                            <Button type="text" icon={<PlusOutlined />} onClick={createNewSession} style={{ color: 'white' }} />
-                        </AntTooltip>
-                        {sessionId && (
-                            <AntTooltip title={`Session: ${sessionId}`}>
-                                <div className="chatbot-session-indicator" />
-                            </AntTooltip>
+                )}
+
+                <div className="chatbot-main-area">
+                    <div className="chatbot-header">
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+                            <div className="chatbot-avatar">
+                                <MessageOutlined style={{ color: '#fff', fontSize: '16px' }} />
+                            </div>
+                            <div>
+                                <div style={{ fontWeight: 600, fontSize: '16px', lineHeight: 1.2 }}>AI Assistant</div>
+                                <div style={{ fontSize: '12px', opacity: 0.8, display: 'flex', alignItems: 'center', gap: '4px' }}>
+                                    <span className="online-dot"></span> Online
+                                </div>
+                            </div>
+                        </div>
+                        <div style={{ display: 'flex', gap: '4px', alignItems: 'center' }}>
+                            {!isExpanded && (
+                                <AntTooltip title="New Session">
+                                    <Button type="text" icon={<PlusOutlined />} onClick={createNewSession} style={{ color: 'white' }} />
+                                </AntTooltip>
+                            )}
+                            {sessionId && !isExpanded && (
+                                <AntTooltip title={`Session: ${sessionId}`}>
+                                    <div className="chatbot-session-indicator" />
+                                </AntTooltip>
+                            )}
+                            <Button
+                                type="text"
+                                icon={isExpanded ? <CompressOutlined /> : <ExpandOutlined />}
+                                onClick={() => setIsExpanded(!isExpanded)}
+                                style={{ color: 'white' }}
+                            />
+                            <Button type="text" icon={<CloseOutlined />} onClick={() => { setIsOpen(false); setIsExpanded(false); }} style={{ color: 'white' }} />
+                        </div>
+                    </div>
+
+                    <div className="chatbot-messages" ref={chatRef}>
+                        {messages.length === 0 && !loading && (
+                            <div className="chatbot-empty">
+                                <MessageOutlined style={{ fontSize: '48px', color: '#e6e6e6', marginBottom: '16px' }} />
+                                <div style={{ color: '#8c8c8c' }}>Send a message to start chatting!</div>
+                            </div>
                         )}
-                        <Button type="text" icon={<CloseOutlined />} onClick={() => setIsOpen(false)} style={{ color: 'white' }} />
-                    </div>
-                </div>
-
-                <div className="chatbot-messages" ref={chatRef}>
-                    {messages.length === 0 && !loading && (
-                        <div className="chatbot-empty">
-                            <MessageOutlined style={{ fontSize: '48px', color: '#e6e6e6', marginBottom: '16px' }} />
-                            <div style={{ color: '#8c8c8c' }}>Send a message to start chatting!</div>
-                        </div>
-                    )}
-                    {messages.map(renderMessage)}
-                    {loading && (
-                        <div className="chat-message assistant">
-                            <div className="chat-bubble assistant loading">
-                                <div className="typing-dot"></div>
-                                <div className="typing-dot"></div>
-                                <div className="typing-dot"></div>
+                        {messages.map((msg, i) => renderMessage(msg, i))}
+                        {loading && (
+                            <div className="chat-message assistant">
+                                <div className="chat-bubble assistant loading">
+                                    <div className="typing-dot"></div>
+                                    <div className="typing-dot"></div>
+                                    <div className="typing-dot"></div>
+                                </div>
                             </div>
-                        </div>
-                    )}
-                </div>
+                        )}
+                    </div>
 
-                <div className="chatbot-input">
-                    <form onSubmit={handleSubmit} style={{ display: 'flex', gap: '12px', width: '100%', margin: 0 }}>
-                        <Input
-                            value={query}
-                            onChange={(e) => setQuery(e.target.value)}
-                            placeholder="Ask me anything..."
-                            disabled={loading}
-                            bordered={false}
-                            className="chat-input-field"
-                        />
-                        <Button
-                            type="primary"
-                            shape="circle"
-                            icon={<SendOutlined />}
-                            htmlType="submit"
-                            loading={loading}
-                            className="chat-send-btn"
-                        />
-                    </form>
+                    <div className="chatbot-input">
+                        <form onSubmit={handleSubmit} style={{ display: 'flex', gap: '12px', width: '100%', margin: 0 }}>
+                            <Input
+                                value={query}
+                                onChange={(e) => setQuery(e.target.value)}
+                                placeholder="Ask me anything..."
+                                disabled={loading}
+                                bordered={false}
+                                className="chat-input-field"
+                            />
+                            <Button
+                                type="primary"
+                                shape="circle"
+                                icon={<SendOutlined />}
+                                htmlType="submit"
+                                loading={loading}
+                                className="chat-send-btn"
+                            />
+                        </form>
+                    </div>
                 </div>
             </div>
         </>
