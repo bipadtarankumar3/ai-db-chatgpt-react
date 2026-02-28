@@ -211,7 +211,7 @@ function Chatbot({ token, sessionId, setSessionId, isOpen, setIsOpen }) {
                     <div className="chatbot-header">
                         <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
                             <div className="chatbot-avatar">
-                                <MessageOutlined style={{ color: '#fff', fontSize: '16px' }} />
+                                <MessageOutlined style={{ color: 'var(--accent-color)', fontSize: '16px' }} />
                             </div>
                             <div>
                                 <div style={{ fontWeight: 600, fontSize: '16px', lineHeight: 1.2 }}>AI Assistant</div>
@@ -223,7 +223,7 @@ function Chatbot({ token, sessionId, setSessionId, isOpen, setIsOpen }) {
                         <div style={{ display: 'flex', gap: '4px', alignItems: 'center' }}>
                             {!isExpanded && (
                                 <AntTooltip title="New Session">
-                                    <Button type="text" icon={<PlusOutlined />} onClick={createNewSession} style={{ color: 'white' }} />
+                                    <Button type="text" icon={<PlusOutlined />} onClick={createNewSession} style={{ color: 'var(--glass-panel-dark-text)' }} />
                                 </AntTooltip>
                             )}
                             {sessionId && !isExpanded && (
@@ -235,17 +235,18 @@ function Chatbot({ token, sessionId, setSessionId, isOpen, setIsOpen }) {
                                 type="text"
                                 icon={isExpanded ? <CompressOutlined /> : <ExpandOutlined />}
                                 onClick={() => setIsExpanded(!isExpanded)}
-                                style={{ color: 'white' }}
+                                style={{ color: 'var(--glass-panel-dark-text)' }}
                             />
-                            <Button type="text" icon={<CloseOutlined />} onClick={() => { setIsOpen(false); setIsExpanded(false); }} style={{ color: 'white' }} />
+                            <Button type="text" icon={<CloseOutlined />} onClick={() => { setIsOpen(false); setIsExpanded(false); }} style={{ color: 'var(--glass-panel-dark-text)' }} />
                         </div>
                     </div>
 
                     <div className="chatbot-messages" ref={chatRef}>
                         {messages.length === 0 && !loading && (
                             <div className="chatbot-empty">
-                                <MessageOutlined style={{ fontSize: '48px', color: '#e6e6e6', marginBottom: '16px' }} />
-                                <div style={{ color: '#8c8c8c' }}>Send a message to start chatting!</div>
+                                <MessageOutlined style={{ fontSize: '52px', color: 'var(--accent-color)' }} />
+                                <div style={{ fontSize: '16px', fontWeight: 600, color: 'var(--text-primary)' }}>AI CSR Assistant</div>
+                                <div style={{ color: 'var(--text-secondary)', fontSize: '13px', maxWidth: 240 }}>Ask me anything about your CSR campaigns, impact data, or sustainability goals.</div>
                             </div>
                         )}
                         {messages.map((msg, i) => renderMessage(msg, i))}
@@ -261,11 +262,11 @@ function Chatbot({ token, sessionId, setSessionId, isOpen, setIsOpen }) {
                     </div>
 
                     <div className="chatbot-input">
-                        <form onSubmit={handleSubmit} style={{ display: 'flex', gap: '12px', width: '100%', margin: 0 }}>
+                        <form onSubmit={handleSubmit} className="chat-input-wrapper">
                             <Input
                                 value={query}
                                 onChange={(e) => setQuery(e.target.value)}
-                                placeholder="Ask me anything..."
+                                placeholder="Execute command or ask..."
                                 disabled={loading}
                                 bordered={false}
                                 className="chat-input-field"

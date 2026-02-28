@@ -3,10 +3,22 @@
   display: flex;
   justify-content: center;
   align-items: center;
-  background: linear-gradient(135deg, #1e1e1e 0%, #000000 100%);
+  background: url('/ai_csr_login_bg.png') no-repeat center center fixed;
+  background-size: cover;
   position: relative;
   overflow: hidden;
   width: 100vw;
+}
+
+.login-container::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 5, 10, 0.6);
+  z-index: 0;
 }
 
 .login-background-shapes {
@@ -15,7 +27,7 @@
   left: -10%;
   width: 50vw;
   height: 50vw;
-  background: radial-gradient(circle, rgba(22,119,255,0.15) 0%, rgba(0,0,0,0) 70%);
+  background: radial-gradient(circle, rgba(22, 119, 255, 0.15) 0%, rgba(0, 0, 0, 0) 70%);
   border-radius: 50%;
   animation: float 10s ease-in-out infinite;
   z-index: 1;
@@ -28,26 +40,34 @@
   right: -50%;
   width: 40vw;
   height: 40vw;
-  background: radial-gradient(circle, rgba(16,163,127,0.15) 0%, rgba(0,0,0,0) 70%);
+  background: radial-gradient(circle, rgba(16, 163, 127, 0.15) 0%, rgba(0, 0, 0, 0) 70%);
   border-radius: 50%;
   animation: float 12s ease-in-out infinite reverse;
 }
 
 @keyframes float {
-  0% { transform: translate(0, 0); }
-  50% { transform: translate(30px, -30px); }
-  100% { transform: translate(0, 0); }
+  0% {
+    transform: translate(0, 0);
+  }
+
+  50% {
+    transform: translate(30px, -30px);
+  }
+
+  100% {
+    transform: translate(0, 0);
+  }
 }
 
 .login-card {
   width: 100%;
   max-width: 400px;
   z-index: 2;
-  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
-  background: rgba(30, 30, 30, 0.7) !important;
-  backdrop-filter: blur(10px);
-  -webkit-backdrop-filter: blur(10px);
-  border: 1px solid rgba(255, 255, 255, 0.05) !important;
+  box-shadow: 0 8px 32px rgba(0, 255, 200, 0.15);
+  background: rgba(10, 15, 20, 0.8) !important;
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+  border: 1px solid rgba(0, 255, 200, 0.2) !important;
   border-radius: 16px !important;
 }
 
@@ -64,14 +84,14 @@
 
 .ant-input-affix-wrapper-lg {
   border-radius: 8px !important;
-  background: rgba(255,255,255,0.05) !important;
-  border-color: rgba(255,255,255,0.1) !important;
+  background: rgba(255, 255, 255, 0.05) !important;
+  border-color: rgba(255, 255, 255, 0.1) !important;
 }
 
 .ant-input-affix-wrapper-lg:focus,
 .ant-input-affix-wrapper-lg-focused {
   border-color: #1677ff !important;
-  background: rgba(255,255,255,0.1) !important;
+  background: rgba(255, 255, 255, 0.1) !important;
 }
 
 .ant-input {
@@ -80,9 +100,9 @@
 }
 
 .ant-typography {
-  color: rgba(255,255,255,0.85) !important;
+  color: rgba(255, 255, 255, 0.85) !important;
 }
 
 .ant-typography.ant-typography-secondary {
-  color: rgba(255,255,255,0.45) !important;
+  color: rgba(255, 255, 255, 0.45) !important;
 }

@@ -1,68 +1,191 @@
+@import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&display=swap');
+
 :root {
-  font-family: system-ui, Avenir, Helvetica, Arial, sans-serif;
-  line-height: 1.5;
-  font-weight: 400;
+  font-family: 'Outfit', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
 
-  color-scheme: light dark;
-  color: rgba(255, 255, 255, 0.87);
-  background-color: #242424;
+  /* Day Theme Variables */
+  --bg-image: url('/bg-day.png');
+  --text-primary: #333;
+  --text-secondary: #666;
 
-  font-synthesis: none;
-  text-rendering: optimizeLegibility;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
+  --glass-bg-primary: rgba(255, 255, 255, 0.45);
+  --glass-border-primary: rgba(255, 255, 255, 0.6);
+  --glass-shadow-primary: rgba(0, 0, 0, 0.05);
+
+  --glass-card-bg: rgba(255, 255, 255, 0.65);
+  --glass-card-border: rgba(255, 255, 255, 0.8);
+
+  --glass-panel-dark-bg: rgba(255, 255, 255, 0.55);
+  --glass-panel-dark-border: rgba(255, 255, 255, 0.4);
+  --glass-panel-dark-text: #222;
+
+  --accent-color: #00b96b;
+  /* CSR Green */
 }
 
-a {
-  font-weight: 500;
-  color: #646cff;
-  text-decoration: inherit;
-}
-a:hover {
-  color: #535bf2;
+[data-theme='dark'] {
+  /* Night Theme Variables */
+  --bg-image: url('/bg-night.png');
+  --text-primary: #fff;
+  --text-secondary: rgba(255, 255, 255, 0.7);
+
+  --glass-bg-primary: rgba(10, 20, 30, 0.55);
+  --glass-border-primary: rgba(255, 255, 255, 0.1);
+  --glass-shadow-primary: rgba(0, 0, 0, 0.2);
+
+  --glass-card-bg: rgba(20, 30, 40, 0.65);
+  --glass-card-border: rgba(255, 255, 255, 0.15);
+
+  --glass-panel-dark-bg: rgba(0, 10, 20, 0.65);
+  --glass-panel-dark-border: rgba(255, 255, 255, 0.1);
+  --glass-panel-dark-text: #fff;
+
+  --accent-color: #00ffc8;
+  /* AI Cyan */
 }
 
 body {
   margin: 0;
-  display: flex;
-  place-items: center;
-  min-width: 320px;
+  padding: 0;
   min-height: 100vh;
+  width: 100vw;
+  background: var(--bg-image) no-repeat center center fixed;
+  background-size: cover;
+  overflow-x: hidden;
+  color: var(--text-primary);
+  transition: background 0.5s ease;
 }
 
-h1 {
-  font-size: 3.2em;
-  line-height: 1.1;
+/* General Glass Theme Utilities */
+.glass-panel {
+  background: var(--glass-bg-primary);
+  backdrop-filter: blur(24px);
+  -webkit-backdrop-filter: blur(24px);
+  border: 1px solid var(--glass-border-primary);
+  box-shadow: 0 8px 32px var(--glass-shadow-primary);
+  border-radius: 32px;
+  transition: all 0.3s ease;
 }
 
-button {
-  border-radius: 8px;
-  border: 1px solid transparent;
-  padding: 0.6em 1.2em;
-  font-size: 1em;
-  font-weight: 500;
-  font-family: inherit;
-  background-color: #1a1a1a;
+.glass-panel-dark {
+  background: var(--glass-panel-dark-bg);
+  backdrop-filter: blur(24px);
+  -webkit-backdrop-filter: blur(24px);
+  border: 1px solid var(--glass-panel-dark-border);
+  box-shadow: 0 8px 32px var(--glass-shadow-primary);
+  border-radius: 24px;
+  color: var(--glass-panel-dark-text);
+  transition: all 0.3s ease;
+}
+
+.glass-card {
+  background: var(--glass-card-bg);
+  backdrop-filter: blur(12px);
+  border: 1px solid var(--glass-card-border);
+  border-radius: 20px;
+  box-shadow: 0 4px 16px var(--glass-shadow-primary);
+  padding: 20px;
+  transition: transform 0.2s, background 0.3s ease, border 0.3s ease;
+  color: var(--text-primary);
+}
+
+.glass-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.05);
+}
+
+.layout-wrapper {
+  display: flex;
+  height: 100vh;
+  padding: 24px;
+  box-sizing: border-box;
+  gap: 24px;
+}
+
+.sidebar-pill {
+  width: 80px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 32px 0;
+  gap: 24px;
+}
+
+.main-glass-container {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  position: relative;
+}
+
+/* Ant Design Overrides to remove default background */
+.ant-layout,
+.ant-layout-header,
+.ant-layout-content,
+.ant-layout-sider {
+  background: transparent !important;
+}
+
+.ant-card {
+  background: transparent !important;
+  border: none !important;
+}
+
+.ant-card-body {
+  padding: 0 !important;
+}
+
+.glass-btn {
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 20px;
   cursor: pointer;
-  transition: border-color 0.25s;
-}
-button:hover {
-  border-color: #646cff;
-}
-button:focus,
-button:focus-visible {
-  outline: 4px auto -webkit-focus-ring-color;
+  color: var(--text-secondary);
+  transition: all 0.3s;
 }
 
-@media (prefers-color-scheme: light) {
-  :root {
-    color: #213547;
-    background-color: #ffffff;
-  }
-  a:hover {
-    color: #747bff;
-  }
-  button {
-    background-color: #f9f9f9;
-  }
+.glass-btn:hover,
+.glass-btn.active {
+  background: var(--glass-card-border);
+  color: var(--accent-color);
+  box-shadow: 0 4px 12px var(--glass-shadow-primary);
+}
+
+.glass-btn.active {
+  background: var(--accent-color);
+  color: #fff;
+}
+
+/* Custom Scrollbar */
+::-webkit-scrollbar {
+  width: 6px;
+}
+
+::-webkit-scrollbar-thumb {
+  background: rgba(0, 0, 0, 0.1);
+  border-radius: 4px;
+}
+
+/* Antd Calendar Overrides for Dark Panel */
+.glass-panel-dark .ant-picker-calendar {
+  background: transparent !important;
+  color: #fff !important;
+}
+
+.glass-panel-dark .ant-picker-calendar .ant-picker-cell-inner {
+  color: rgba(255, 255, 255, 0.6) !important;
+}
+
+.glass-panel-dark .ant-picker-calendar .ant-picker-cell-in-view .ant-picker-cell-inner {
+  color: #fff !important;
+}
+
+.glass-panel-dark .ant-picker-calendar .ant-picker-cell-selected .ant-picker-cell-inner {
+  background: #ff7527 !important;
+  color: #fff !important;
 }
