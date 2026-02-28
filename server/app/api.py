@@ -78,6 +78,24 @@ def new_session():
     return {"session_id": sid}
 
 
+@app.get("/sessions")
+def get_sessions():
+    from app.memory.chat_store import get_all_sessions
+    return get_all_sessions()
+
+
+@app.get("/session/{session_id}/history")
+def get_session_history(session_id: str):
+    from app.memory.chat_store import get_history
+    rows = get_history(session_id)
+    messages = []
+    for r in rows:
+        messages.append({
+            "role": r[0],
+            "text": r[1]
+        })
+    return {"messages": messages}
+
 @app.post("/query", response_model=QueryResponse)
 def query(req: QueryRequest):
     """Endpoint used by the React frontend to submit a natural language question.

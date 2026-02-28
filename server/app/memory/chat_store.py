@@ -111,3 +111,26 @@ def get_history(session_id, limit=None):
 def get_all_history(session_id):
     """Get all chat history for a session (for display purposes)."""
     return get_history(session_id, limit=None)
+
+
+def get_all_sessions():
+    """Get all unique sessions ordered by creation time."""
+    try:
+        conn = get_connection()
+        cur = conn.cursor()
+        
+        cur.execute("""
+            SELECT session_id, MIN(created_at) as started_at
+            FROM chat_history
+            GROUP BY session_id
+            ORDER BY started_at DESC
+        """)
+        
+        rows = cur.fetchall()
+        conn.close()
+        
+        return [{"session_id": r[0], "started_at": r[1].isoformat() if r[1] else None} for r in rows]
+    except Exception as e:
+        logger.error(f"Failed to get all sessions: {e}")
+        return []
+
